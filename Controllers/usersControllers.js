@@ -24,3 +24,18 @@ export const getUser = async(req, res) => {
     res.sendStatus(500)
 }
 }
+
+export const postUser = async () => {
+  const {firstName, lastName, age} = req.body;
+  try {
+    const {rows} = await pool.query('INSERT INTO users(first_name, last_name, age) VALUES ($1, $2, $3) RETURNING*;', [firstName, lastName, age]);
+
+    console.log(rows)
+    res.status(201).json(rows[0]);
+
+  } catch (error) {
+
+    req.status(505).send();
+    
+  }
+}
