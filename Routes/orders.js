@@ -9,6 +9,7 @@ ordersRouter.get('/:id', getOrder);
 ordersRouter.post('/', postOrder);
 ordersRouter.put('/:id', modifyOrder);
 ordersRouter.delete('/:id', deleteOrder);
+// ordersRouter.get('/:id', getUserOrders);
 
 
 export default ordersRouter;
