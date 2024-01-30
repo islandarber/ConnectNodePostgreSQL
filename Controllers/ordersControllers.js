@@ -9,14 +9,19 @@ export const getOrders = async(req, res) => {
   }
 }
 
-// export const getUserOrders = async (req, res) => {
-//   try {
-    
-//   } catch (error) {
-    
-//   }
-
-// }
+export const getUserOrders = async (req, res) => {
+  const {id} = req.params;
+  try {
+    const {rows} = await pool.query('SELECT orders.id, users.first_name, orders.user_id, users.last_name , orders.price FROM orders LEFT JOIN users ON orders.user_id = users.id WHERE orders.user_id = $1', [id]);
+    if(rows.length === 0){
+      res.sendStatus(404)
+  } else {
+      res.json(rows)
+  }
+  } catch (error) {
+    res.status(500).send();
+  }
+}
 
 export const getOrder = async (req, res) => {
   const {id} = req.params;
@@ -61,6 +66,17 @@ export const deleteOrder = async (req, res) => {
   const {id} = req.params;
   try {
     const {rows} = await pool.query('DELETE FROM orders WHERE id=$1 RETURNING *', [id])
+    res.status(200).json(rows[0]);
+  } catch (error) {
+    res.status(500).send();
+  }
+}
+
+export const modifyInactivity = async (req,res) => {
+  const {id} = req.params;
+  try {
+    const {active} = req.body;
+    const {rows} = await pool.query('UPDATE users SET active=$1 WHERE id=$2 RETURNING *;',[active, id])
     res.status(200).json(rows[0]);
   } catch (error) {
     res.status(500).send();
