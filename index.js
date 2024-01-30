@@ -7,7 +7,7 @@ const app = express();
 const port = 8000;
 
 app.use(express.json());
-app.use('/', usersRouter)
+app.use('/users', usersRouter)
 
 app.get('/', (req, res, next) => {
   res.send("GET")
