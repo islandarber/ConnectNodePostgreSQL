@@ -1,7 +1,7 @@
 import {pool} from '../db/pool.js';
 import {body, validationResult} from 'express-validator';
 
-export const validator = [
+export const usersValidator = [
   body('first_name').isString().notEmpty(),
   body('last_name').isString().notEmpty(),
   body('age').isNumeric().notEmpty()

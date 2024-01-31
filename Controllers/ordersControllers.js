@@ -1,4 +1,14 @@
 import {pool} from '../db/pool.js'
+import {body, validationResult} from 'express-validator';
+
+export const ordersValidator = [
+  body('price').isNumeric().notEmpty(),
+  body('user_id').notEmpty()
+]
+
+export const priceValidator = [
+  body('price').isNumeric().notEmpty()
+]
 
 export const getOrders = async(req, res) => {
   try {
@@ -42,8 +52,13 @@ export const postOrder = async (req, res) => {
   try {
     const {price, user_id} = req.body;
     const date = new Date();
-    const {rows} = await pool.query('INSERT INTO orders(price, date, user_id) VALUES ($1, $2, $3) RETURNING*;', [price, date, user_id])
-    res.status(201).json(rows[0]);
+    const errors = validationResult(req);
+    console.log(errors);
+    if (errors.isEmpty()){
+      const {rows} = await pool.query('INSERT INTO orders(price, date, user_id) VALUES ($1, $2, $3) RETURNING*;', [price, date, user_id])
+      res.status(201).json(rows[0]);
+    }
+    res.status(422).send(errors);
   } catch (error) {
     res.status(500).send();
     console.log(error);
@@ -54,8 +69,12 @@ export const modifyOrder = async (req, res) => {
   const {id} = req.params;
   try {
     const {price} = req.body;
+    const errors = validationResult(req);
+    if (errors.isEmpty()){
     const {rows} = await pool.query('UPDATE orders SET price=$1 WHERE id=$2 RETURNING *;', [price, id]);
     res.status(200).json(rows[0]);
+    }
+    res.status(422).send(errors);
   } catch (error) {
     res.status(500).send();
     console.log(error);
